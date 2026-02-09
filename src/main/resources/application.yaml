@@ -1,8 +1,31 @@
+#server:
+#  port: 8080
+#
+#spring:
+#  jpa:
+#    hibernate:
+#      ddl-auto: update # When you launch the application for the first time - switch "none" at "create"
+#    show-sql: true
+
 server:
   port: 8080
 
 spring:
+  # --- NUEVA CONFIGURACIÓN DE CONEXIÓN ---
+  datasource:
+    # Las variables ${DB_...} serán inyectadas por ECS desde el task-definition.json
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/${DB_NAME:mydb}?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+    username: ${DB_USER:root}
+    password: ${DB_PWD:password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+  # --- TU CONFIGURACIÓN EXISTENTE ---
   jpa:
     hibernate:
-      ddl-auto: update # When you launch the application for the first time - switch "none" at "create"
+      ddl-auto: update # Se mantiene para que cree las tablas en RDS automáticamente
     show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
