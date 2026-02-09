@@ -34,3 +34,27 @@ build/
 
 ### Docs folder
 docs/
+
+### Terraform ###
+# Ignora el directorio de trabajo de Terraform (contiene los binarios del provider)
+.terraform/
+
+# Ignora los archivos de estado (¡MUY IMPORTANTE! Contienen datos sensibles de tu AWS)
+*.tfstate
+*.tfstate.backup
+
+# Ignora el archivo de lock
+.terraform.lock.hcl
+
+# Ignora archivos de variables que podrían tener contraseñas
+*.tfvars
+*.tfvars.json
+
+### AWS ###
+# Ignora credenciales locales si las llegaras a guardar en la carpeta del proyecto
+.aws/credentials
+.aws/config
+
+### OS ###
+.DS_Store
+Thumbs.db
