@@ -61,7 +61,7 @@ Bash
 ###### Subir cambios para activar GitHub Actions
 ```
 git add .
-git commit -m "🚀 Deploying to AWS Cloud Quest"
+git commit -m "🚀 Deploying to AWS"
 git push origin main
 ```   
 ## 📖 Documentación de la API
