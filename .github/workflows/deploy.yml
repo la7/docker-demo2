@@ -7,12 +7,23 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
+    # Definimos variables de entorno para reutilizar en los pasos
+    env:
+      AWS_REGION: us-east-1
+      ECR_REPOSITORY: springboot-app
+      # Estas pueden ser variables de GitHub (vars.X) o valores fijos
+      ECS_SERVICE: ${{ vars.ECS_SERVICE_NAME || 'spring-hockey-service' }}
+      ECS_CLUSTER: ${{ vars.ECS_CLUSTER_NAME || 'spring-hockey-cluster' }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Paso opcional: El Dockerfile multi-stage ya compila,
+      # pero tener el paso de Maven aquí ayuda a detectar errores rápido.
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -26,27 +37,37 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }} # Requerido en labs
-          aws-region: us-east-1
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build and Push to ECR
+      - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/springboot-app:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/springboot-app:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/springboot-app:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          # Construimos la imagen usando el Dockerfile optimizado
+          docker build -t $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
+          # Guardamos la URI de la imagen para el siguiente paso
+          echo "image=$ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Deploy to ECS
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: .aws/task-definition.json
-          service: mi-app-service
-          cluster: mi-app-cluster
+          container-name: spring-app  # Asegúrate que este nombre coincida con tu JSON
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
