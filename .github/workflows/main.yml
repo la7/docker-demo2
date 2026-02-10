@@ -1,4 +1,0 @@
-# 9. Sincronizar cambios con GitHub
-git add .
-git commit -m "🚀 Infraestructura y despliegue para el laboratorio actual"
-git push origin main
