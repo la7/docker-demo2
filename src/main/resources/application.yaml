@@ -10,14 +10,22 @@
 server:
   port: 8080
 
+# LOCAL with localstack
 spring:
-  # --- NUEVA CONFIGURACIÓN DE CONEXIÓN ---
   datasource:
-    # Las variables ${DB_...} serán inyectadas por ECS desde el task-definition.json
-    url: jdbc:mysql://${DB_HOST:localhost}:3306/${DB_NAME:mydb}?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
-    username: ${DB_USER:root}
-    password: ${DB_PWD:password}
+    url: jdbc:mysql://localhost:4566/hockeydb # LocalStack mapea el RDS aquí
+    username: test
+    password: test
     driver-class-name: com.mysql.cj.jdbc.Driver
+# AWS cloud
+#spring:
+#  datasource:
+#    # Las variables ${DB_...} serán inyectadas por ECS desde el task-definition.json
+#    url: jdbc:mysql://${DB_HOST:localhost}:3306/${DB_NAME:mydb}?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+#    username: ${DB_USER:root}
+#    password: ${DB_PWD:password}
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+
 
 
   # --- TU CONFIGURACIÓN EXISTENTE ---
