@@ -1,16 +1,11 @@
-#FROM openjdk:11
-#COPY ./target/docker-demo-0.0.1-SNAPSHOT.jar docker-demo-0.0.1-SNAPSHOT.jar
-#CMD ["java","-jar","docker-demo-0.0.1-SNAPSHOT.jar"]
-#EXPOSE 8080
-
 # Etapa 1: Compilación
-FROM --platform=$BUILDPLATFORM maven:3.8.5-amazoncorretto-17 AS build
+FROM --platform=$BUILDPLATFORM maven:3.8.5-openjdk-17 AS build
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Etapa 2: Ejecución (Para AWS y Mac)
+# Etapa 2: Ejecución (Forzamos linux/amd64 para AWS Fargate)
 FROM --platform=linux/amd64 eclipse-temurin:17-jre-jammy
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
