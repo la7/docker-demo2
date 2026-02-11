@@ -1,8 +1,25 @@
 # 1. Repositorio para la imagen de Docker
+
+provider "aws" {
+  region                      = "us-east-1"
+  access_key                  = "test"
+  secret_key                  = "test"
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_requesting_account_id  = true
+
+  endpoints {
+    ecr = "http://localhost:4566"
+    ecs = "http://localhost:4566"
+    rds = "http://localhost:4566"
+    # ... otros endpoints que uses
+  }
+}
+
 resource "aws_ecr_repository" "springboot_app" {
-  name = "springboot-app" # <--- Este nombre debe ser idéntico al del script
+  name                 = "springboot-app"
   image_tag_mutability = "MUTABLE"
-  force_delete         = true # Útil para laboratorios
+  force_delete         = true
 }
 
 # 2. Base de Datos RDS MySQL (Capa Gratuita)
