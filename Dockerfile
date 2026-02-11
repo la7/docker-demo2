@@ -4,20 +4,20 @@
 #EXPOSE 8080
 
 # Etapa 1: Compilación (Build)
-FROM maven:3.8.5-openjdk-17 AS build
+# Usamos Amazon Corretto 17, que es ultra estable para AWS
+FROM maven:3.8.5-amazoncorretto-17 AS build
 WORKDIR /app
-# Copiamos el pom y el código fuente
 COPY pom.xml .
 COPY src ./src
-# Compilamos y generamos el JAR ignorando los tests para ganar velocidad
+# Compilamos el proyecto
 RUN mvn clean package -DskipTests
 
 # Etapa 2: Ejecución (Runtime)
+# Usamos una imagen ligera de Alpine para el JRE
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-# Copiamos el JAR generado en la etapa anterior con un nombre genérico
+# Copiamos el JAR desde la etapa de compilación
 COPY --from=build /app/target/*.jar app.jar
-# Exponemos el puerto
+
 EXPOSE 8080
-# Ejecutamos la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]
