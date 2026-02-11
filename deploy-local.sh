@@ -20,11 +20,18 @@ docker build -t springboot-app:latest .
 # 4. Obtener URI del ECR de LocalStack de forma segura
 echo "📤 Obteniendo URI del ECR..."
 # Usamos el comando directo de AWS apuntando al endpoint de LocalStack
-ECR_URI=$(aws --endpoint-url=http://localhost:4566 ecr describe-repositories \
+#ECR_URI=$(aws --endpoint-url=http://localhost:4566 ecr describe-repositories \
+#  --repository-names springboot-app \
+#  --region us-east-1 \
+#  --query "repositories[0].repositoryUri" \
+#  --output text)
+ECR_URI=$(aws --endpoint-url=http://127.0.0.1:4566 ecr describe-repositories \
   --repository-names springboot-app \
   --region us-east-1 \
   --query "repositories[0].repositoryUri" \
   --output text)
+
+echo "URI: $ECR_URI"
 
 if [ -z "$ECR_URI" ]; then
     echo "❌ Error: No se encontró el repositorio 'springboot-app' en LocalStack."
