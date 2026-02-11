@@ -1,6 +1,6 @@
 # 1. Repositorio para la imagen de Docker
-resource "aws_ecr_repository" "app_repo" {
-  name                 = "springboot-app"
+resource "aws_ecr_repository" "springboot_app" {
+  name = "springboot-app" # <--- Este nombre debe ser idéntico al del script
   image_tag_mutability = "MUTABLE"
   force_delete         = true # Útil para laboratorios
 }
