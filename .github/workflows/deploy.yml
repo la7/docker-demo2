@@ -71,3 +71,11 @@ jobs:
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
+
+#      - name: Run Unit Tests
+#          run: mvn test
+#
+#          - name: Verify Infrastructure (TFLint)
+#            run: |
+#              tflint
+#              terraform validate
