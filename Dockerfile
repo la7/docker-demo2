@@ -3,8 +3,6 @@
 #CMD ["java","-jar","docker-demo-0.0.1-SNAPSHOT.jar"]
 #EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
-
 # Etapa 1: Compilación
 FROM --platform=$BUILDPLATFORM maven:3.8.5-amazoncorretto-17 AS build
 WORKDIR /app
