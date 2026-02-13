@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    # Usamos host.docker.internal para que el contenedor llegue a LocalStack en tu Mac [cite: 36, 37]
+    url: jdbc:mysql://host.docker.internal:4510/appdb
+    username: admin
+    password: Password12345
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+aws:
+  secretsmanager:
+    endpoint: http://host.docker.internal:4566
+    region: us-east-1

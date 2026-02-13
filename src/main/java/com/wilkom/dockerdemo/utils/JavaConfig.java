@@ -2,6 +2,9 @@ package com.wilkom.dockerdemo.utils;
 
 import javax.sql.DataSource;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,12 +41,20 @@ public class JavaConfig {
 
     private SecretValue getSecretValue() {
 
-        String secretName = "demodb/test";
+        // String secretName = "demodb/test";
+        String secretName = "springboot-app-secrets";
         String region = "us-east-1";
 
         // Create a Secrets Manager client
-        AWSSecretsManager client = AWSSecretsManagerClientBuilder.standard()
+        /*AWSSecretsManager client = AWSSecretsManagerClientBuilder.standard()
                 .withRegion(region)
+                .build();*/
+
+        // Ejemplo conceptual de lo que debería tener tu JavaConfig
+        AWSSecretsManager client = AWSSecretsManagerClientBuilder.standard()
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(
+                        "http://host.docker.internal:4566", "us-east-1"))
+                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("test", "test")))
                 .build();
 
         String secret;
